@@ -57,6 +57,14 @@ function rainbowTags(activeEditor) {
   var divsColorCount = 0;
   var openDivStack = [];
   var divsDecorationTypeMap = {};
+  
+  var match2;
+  var regEx2 = /<!--([\s\S])*?-->/gm;  //matches comments - lazy match
+  while (match2 = regEx2.exec(text)) {
+    let matchLen = match2[0].length;
+    let repl = " ".repeat(matchLen);
+    text = text.substring(0, match2.index) + repl + text.substring(match2.index + matchLen);  //replace comment with spaces
+  }
 
   for (var index in divsDecorationTypes) {
     divsDecorationTypeMap[index] = [];
