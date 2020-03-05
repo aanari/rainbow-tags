@@ -3,7 +3,7 @@
   "displayName": "Rainbow Tags",
   "description": "Rainbow Tags",
   "publisher": "voldemortensen",
-  "repository": "https://github.com/voldemortensen/rainbow-tags",
+  "repository": "https://gitlab.com/voldemortensen/rainbow-tags",
   "version": "0.2.0",
   "engines": {
     "vscode": "^1.30.0"
