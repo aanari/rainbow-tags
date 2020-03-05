@@ -1,0 +1,73 @@
+{
+  "name": "rainbow-tags",
+  "displayName": "Rainbow Tags",
+  "description": "Rainbow Tags",
+  "publisher": "voldemortensen",
+  "repository": "https://gitlab.com/voldemortensen/rainbow-tags",
+  "version": "0.3.0",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*",
+    "onCommand:extension.rainbowTags"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Rainbow Tags",
+      "properties": {
+        "rainbowTags.colors": {
+          "type": "array",
+          "default": [
+            "#e6b422",
+            "#c70067",
+            "#00a960",
+            "#fc7482"
+          ],
+          "description": "An array of HEX color codes for the tag highlighting. Unlimited amount possible.",
+          "scope": "window"
+        },
+        "rainbowTags.hightlightType": {
+          "type": "string",
+          "default": "color",
+          "enum": [
+            "color",
+            "background-color",
+            "border"
+          ],
+          "description": "Highlighting graphical style of choice. Default \"color\"",
+          "scope": "window"
+        },
+        "rainbowTags.allowEverywhere": {
+          "type": "boolean",
+          "default": false,
+          "description": "Determines if the highting is supported only in XML-typed languages or in all documents with all languages. Allowing this might lead to unforseen circumstances with anything resembling XML/HTML tag structures, eg: TS types, eg: \"const stuff: <CustomType>\"",
+          "scope": "window"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "extension.rainbowTags",
+        "title": "Rainbow Tags"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.10.59",
+    "diff": "^4.0.1",
+    "eslint": "^4.11.0",
+    "prettier": "1.17.1",
+    "typescript": "^3.7.3",
+    "vscode": "^1.1.36"
+  }
+}
