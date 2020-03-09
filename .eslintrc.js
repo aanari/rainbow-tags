@@ -24,6 +24,8 @@ module.exports = {
 			"warn",
 			2
 		],
+		"brace-style": 0,
+		"no-return-assign": 0,
 		"no-unused-vars": 0,
 		"padded-blocks": 1,
 		"no-multiple-empty-lines": 1,

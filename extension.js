@@ -7,7 +7,7 @@ const vscode = require('vscode')
 /**
  * List of supported language IDs that the extension renders in
  * This is part of the script to prevent hightlighting for stuff like TS types, eg: "const stuff: <CustomType>"
- * @type {[string]}
+ * @type {string[]}
  */
 const supportedLanguages = [
   'html',
@@ -17,6 +17,58 @@ const supportedLanguages = [
   'smarty',
   'xml'
 ]
+
+/**
+ * List of blacklisted unformatter tags
+ * @type {string][]}
+ */
+const blacklistTags = [
+  '!DOCTYPE',
+  'html',
+  'head',
+  'meta',
+  'body',
+  'title',
+  'link',
+  'script',
+  'base',
+  'style',
+  'area',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'param',
+  'source',
+  'track',
+  'wbr'
+]
+
+/**
+ * List of blacklisted formatter closing tags - eg: </title>
+ * @type {string}
+ */
+const blacklistTagsFormattedEndings = blacklistTags.map(tag => '</' + tag + '>')
+
+/**
+ * List of blacklisted formatter beginning tags without - eg: <title>
+ * @type {string}
+ */
+const blacklistTagsFormattedBeginnings = blacklistTags.map(tag => '<' + tag + '>')
+
+/**
+ * List of blacklisted formatter beginning tags with whitespaces - eg: <title class="red">
+ * @type {string}
+ */
+const blacklistTagsFormattedBeginningsWithWhitespaces = blacklistTags.map(tag => '<' + tag + ' ')
+
+/**
+ * List of blacklisted formatter beginning tags with linebreaks - eg: <title \n>
+ * @type {string}
+ */
+const blacklistTagsFormattedBeginningsWithLinebreaks = blacklistTags.map(tag => '<' + tag)
 
 /**
  * User set global application
@@ -30,7 +82,7 @@ const allowEverywhere = vscode.workspace
 /**
  * User set color array thought the options
  * Can instead inherit the default values if user sets nothing
- * @type {[string]}
+ * @type {string[]}
  */
 const tagColorList = vscode.workspace
   .getConfiguration('rainbowTags')
@@ -39,7 +91,7 @@ const tagColorList = vscode.workspace
 /**
  * User set style choice for highlighting
  * Can instead inherit the default value if user sets nothing
- * @type {[string]
+ * @type {string[]}
  */
 const colorStyle = vscode.workspace
   .getConfiguration('rainbowTags')
@@ -57,7 +109,7 @@ const isolatedRightBracketsDecorationTypes = vscode.window.createTextEditorDecor
 
 /**
  * List of color text decorators that
- * @type {[{key: string}]} - A list of VScode's "TextEditorDecorationType" values ending with a number based on auto-generation
+ * @type {{key: string}[]]} - A list of VScode's "TextEditorDecorationType" values ending with a number based on auto-generation
  */
 const tagDecoratorList = []
 
@@ -202,6 +254,7 @@ function rainbowTags (activeEditor) {
    */
     const regExComments = /<!--([\s\S])*?-->/gm
 
+    // eslint-disable-next-line no-cond-assign
     while (matchComment = regExComments.exec(inputString)) {
       let matchLen = matchComment[0].length
       let repl = ' '.repeat(matchLen)
@@ -234,7 +287,7 @@ function rainbowTags (activeEditor) {
      * Regex pattern for tag pairs
      * @type {RegExp}
      */
-    const regExTags = /(<(?!\?)\/?(?!html|head|meta|body|title|link|script|base|style|area|br|col|embed|hr|img|input|param|source|track|wbr)[^]+?(?<!\?)>)/g
+    const regExTags = /(<(?!\?)\/?[^]+?(?<!\?)>)/g
 
     /* ------ TEMP DUMPS ----- */
 
@@ -274,6 +327,12 @@ function rainbowTags (activeEditor) {
     while ((matchTags = regExTags.exec(inputText))) {
       // Closing of a tag pair
       if (matchTags[0].substring(0, 2) === '</') {
+        // Dont hightlight blacklisted tag endings
+        const matchAgainstBlacklist = matchTags[0]
+        if (blacklistTagsFormattedEndings.includes(matchAgainstBlacklist)) {
+          continue
+        }
+
         let startPosEnding = activeEditor.document.positionAt(matchTags.index)
         let endPosEnding = activeEditor.document.positionAt(matchTags.index + matchTags[0].indexOf('>') + 1)
         let decorationEnding = {
@@ -291,6 +350,43 @@ function rainbowTags (activeEditor) {
 
       // Opening of a tag pair
       else if (matchTags[0].substring(0, 1) === '<') {
+        /**
+         * @type {string}
+         */
+        const matchAgainstBlacklist = matchTags[0]
+
+        /**
+         * @type {string}
+         */
+        const matchAgainstBlacklistFirstWhitespace = matchTags[0].substr(0, matchTags[0].indexOf(' ') + 1)
+
+        /**
+         * @type {string[]}
+         */
+        const matchAgainstBlacklistFirstLinebreak = matchTags[0].match(/[^\r\n]+/g)
+
+        // Dont hightlight blacklisted tag beginnings - no whitespaces
+        if (blacklistTagsFormattedBeginnings.includes(matchAgainstBlacklist)) {
+          continue
+        }
+
+        // Dont hightlight blacklisted tag beginnings - with whitespaces
+        if (blacklistTagsFormattedBeginningsWithWhitespaces.includes(matchAgainstBlacklistFirstWhitespace)) {
+          continue
+        }
+
+        // Dont hightlight blacklisted tag beginnings - with linebreaks
+        if (blacklistTagsFormattedBeginningsWithLinebreaks.includes(matchAgainstBlacklistFirstLinebreak[0])) {
+          continue
+        }
+
+        // Dont hightlight self-closing tags
+        const tagOpening = matchTags[0].slice(0, 1)
+        const tagClosign = matchTags[0].slice(-2)
+        if (tagOpening === '<' && tagClosign === '/>') {
+          continue
+        }
+
         let startPosOpening = activeEditor.document.positionAt(matchTags.index)
 
         let endPosOpening
