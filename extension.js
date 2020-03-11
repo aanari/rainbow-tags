@@ -127,6 +127,17 @@ function activate (context) {
   )
   context.subscriptions.push(registerExtensionCommand)
 
+  // Autoreload when config changes
+  vscode.workspace.onDidChangeConfiguration(() => {
+    const newColors = vscode.workspace
+      .getConfiguration('rainbowTags')
+      .get('colors')
+
+    if (!(tagColorList.length === newColors.length && tagColorList.every(function (value, index) { return value === newColors[index] }))) {
+      vscode.commands.executeCommand('workbench.action.reloadWindow')
+    }
+  })
+
   // Assigns all colors to the decorator list
   for (let colorIndex in tagColorList) {
     let stylePair
@@ -153,7 +164,6 @@ function activate (context) {
 
     tagDecoratorList.push(
       vscode.window.createTextEditorDecorationType(stylePair)
-
     )
   }
 
