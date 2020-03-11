@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.3.1]
+
+- Autoreload window when configuration changes
+
 ## [0.3.0]
 
 - Rewrote a lot of the code (Elvanos)
