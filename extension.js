@@ -216,8 +216,8 @@ function activate (context) {
  * @param {any} activeEditor - The current editor opened in VSCode
  */
 function rainbowTags (activeEditor) {
-  // Instantly kill this if no editor is provided
-  if (!activeEditor) {
+  // Instantly kill this if no editor is provided or no document is available
+  if (!activeEditor || !activeEditor.document) {
     return
   }
 
