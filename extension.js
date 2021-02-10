@@ -294,10 +294,10 @@ function rainbowTags (activeEditor) {
    */
   const assignTagColors = (inputText) => {
     /**
-     * Regex pattern for tag pairs
+     * Regex pattern for tag pairs. We ignore <?this?> (php) and <%that%> (ejs templates)
      * @type {RegExp}
      */
-    const regExTags = /(<(?!\?)\/?[^]+?(?<!\?)>)/g
+    const regExTags = /(<(?!(?:\?|%))\/?[^]+?(?!(?:\?|%))>)/g
 
     /* ------ TEMP DUMPS ----- */
 
