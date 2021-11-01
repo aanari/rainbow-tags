@@ -68,3 +68,4 @@ Contributors:
 
 - [Elvanos (GitHub)](https://github.com/Elvanos/) / [Elvanos (GitLab)](https://gitlab.com/Elvanos)
 - [Andr3wRiv3rs](https://github.com/Andr3wRiv3rs)
+- [Mathieu Galle](https://gitlab.com/mathieugalle)

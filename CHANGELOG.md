@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.4.0]
+- Ignore ejs tags to prevent highlighting corruption until I figure out a way to reliably handle self closing tags (mathieugalle)
+
+## [0.3.2]
+- Checks for active document before trying to run matching
+
 ## [0.3.1]
 
 - Autoreload window when configuration changes
