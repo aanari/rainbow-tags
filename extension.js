@@ -19,10 +19,10 @@ const supportedLanguages = [
 ]
 
 /**
- * List of blacklisted unformatter tags
+ * List of denylisted unformatter tags
  * @type {string][]}
  */
-const blacklistTags = [
+const denylistTags = [
   '!DOCTYPE',
   'html',
   'head',
@@ -47,28 +47,28 @@ const blacklistTags = [
 ]
 
 /**
- * List of blacklisted formatter closing tags - eg: </title>
+ * List of denylisted formatter closing tags - eg: </title>
  * @type {string}
  */
-const blacklistTagsFormattedEndings = blacklistTags.map(tag => '</' + tag + '>')
+const denylistTagsFormattedEndings = denylistTags.map(tag => '</' + tag + '>')
 
 /**
- * List of blacklisted formatter beginning tags without - eg: <title>
+ * List of denylisted formatter beginning tags without - eg: <title>
  * @type {string}
  */
-const blacklistTagsFormattedBeginnings = blacklistTags.map(tag => '<' + tag + '>')
+const denylistTagsFormattedBeginnings = denylistTags.map(tag => '<' + tag + '>')
 
 /**
- * List of blacklisted formatter beginning tags with whitespaces - eg: <title class="red">
+ * List of denylisted formatter beginning tags with whitespaces - eg: <title class="red">
  * @type {string}
  */
-const blacklistTagsFormattedBeginningsWithWhitespaces = blacklistTags.map(tag => '<' + tag + ' ')
+const denylistTagsFormattedBeginningsWithWhitespaces = denylistTags.map(tag => '<' + tag + ' ')
 
 /**
- * List of blacklisted formatter beginning tags with linebreaks - eg: <title \n>
+ * List of denylisted formatter beginning tags with linebreaks - eg: <title \n>
  * @type {string}
  */
-const blacklistTagsFormattedBeginningsWithLinebreaks = blacklistTags.map(tag => '<' + tag)
+const denylistTagsFormattedBeginningsWithLinebreaks = denylistTags.map(tag => '<' + tag)
 
 /**
  * User set global application
@@ -337,9 +337,9 @@ function rainbowTags (activeEditor) {
     while ((matchTags = regExTags.exec(inputText))) {
       // Closing of a tag pair
       if (matchTags[0].substring(0, 2) === '</') {
-        // Dont hightlight blacklisted tag endings
-        const matchAgainstBlacklist = matchTags[0]
-        if (blacklistTagsFormattedEndings.includes(matchAgainstBlacklist)) {
+        // Dont hightlight denylisted tag endings
+        const matchAgainstDenylist = matchTags[0]
+        if (denylistTagsFormattedEndings.includes(matchAgainstDenylist)) {
           continue
         }
 
@@ -363,30 +363,30 @@ function rainbowTags (activeEditor) {
         /**
          * @type {string}
          */
-        const matchAgainstBlacklist = matchTags[0]
+        const matchAgainstDenylist = matchTags[0]
 
         /**
          * @type {string}
          */
-        const matchAgainstBlacklistFirstWhitespace = matchTags[0].substr(0, matchTags[0].indexOf(' ') + 1)
+        const matchAgainstDenylistFirstWhitespace = matchTags[0].substr(0, matchTags[0].indexOf(' ') + 1)
 
         /**
          * @type {string[]}
          */
-        const matchAgainstBlacklistFirstLinebreak = matchTags[0].match(/[^\r\n]+/g)
+        const matchAgainstDenylistFirstLinebreak = matchTags[0].match(/[^\r\n]+/g)
 
-        // Dont hightlight blacklisted tag beginnings - no whitespaces
-        if (blacklistTagsFormattedBeginnings.includes(matchAgainstBlacklist)) {
+        // Dont hightlight denylisted tag beginnings - no whitespaces
+        if (denylistTagsFormattedBeginnings.includes(matchAgainstDenylist)) {
           continue
         }
 
-        // Dont hightlight blacklisted tag beginnings - with whitespaces
-        if (blacklistTagsFormattedBeginningsWithWhitespaces.includes(matchAgainstBlacklistFirstWhitespace)) {
+        // Dont hightlight denylisted tag beginnings - with whitespaces
+        if (denylistTagsFormattedBeginningsWithWhitespaces.includes(matchAgainstDenylistFirstWhitespace)) {
           continue
         }
 
-        // Dont hightlight blacklisted tag beginnings - with linebreaks
-        if (blacklistTagsFormattedBeginningsWithLinebreaks.includes(matchAgainstBlacklistFirstLinebreak[0])) {
+        // Dont hightlight denylisted tag beginnings - with linebreaks
+        if (denylistTagsFormattedBeginningsWithLinebreaks.includes(matchAgainstDenylistFirstLinebreak[0])) {
           continue
         }
 

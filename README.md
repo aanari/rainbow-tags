@@ -1,6 +1,6 @@
 # Rainbow Tags
 
-Inteligently colors all tag pairs in your file with a smart blacklist containing meta, self-closing and non-paired tags - also functions with custom tags!
+Inteligently colors all tag pairs in your file with a smart denylist containing meta, self-closing and non-paired tags - also functions with custom tags!
 
 ### Example - Text color mode
 
