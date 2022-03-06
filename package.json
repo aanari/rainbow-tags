@@ -4,7 +4,7 @@
   "description": "Rainbow Tags",
   "publisher": "voldemortensen",
   "repository": "https://gitlab.com/voldemortensen/rainbow-tags",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "engines": {
     "vscode": "^1.30.0"
   },
@@ -28,6 +28,10 @@
             "#00a960",
             "#fc7482"
           ],
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
           "description": "An array of HEX color codes for the tag highlighting. Unlimited possibilities.",
           "scope": "window"
         },
@@ -46,6 +50,57 @@
           "type": "boolean",
           "default": false,
           "description": "Determines if the highting is supported only in XML-typed languages or in all documents with all languages. Allowing this might lead to unforseen circumstances with anything resembling XML/HTML tag structures, eg: TS types, eg: \"const stuff: <CustomType>\"",
+          "scope": "window"
+        },
+        "rainbowTags.supportedLanguages": {
+          "type": "array",
+          "default": [
+            "html",
+            "php",
+            "twig",
+            "blade",
+            "smarty",
+            "xml",
+            "vue"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Supported language IDs.",
+          "scope": "window"
+        },
+        "rainbowTags.denylistTags": {
+          "type": "array",
+          "default": [
+            "!DOCTYPE",
+            "html",
+            "head",
+            "meta",
+            "body",
+            "title",
+            "link",
+            "script",
+            "base",
+            "style",
+            "area",
+            "br",
+            "col",
+            "embed",
+            "hr",
+            "img",
+            "input",
+            "param",
+            "source",
+            "track",
+            "wbr"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "description": "Excluded tags.",
           "scope": "window"
         }
       }

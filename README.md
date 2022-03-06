@@ -58,6 +58,30 @@ Example:
 }
 ```
 
+### Supported languages - `rainbowTags.supportedLanguages`
+
+A list of language IDs affected by this extension.
+
+Example:
+
+```javascript
+{
+  "rainbowTags.supportedLanguages": ["html", "xml", "vue"]
+}
+```
+
+### Excluded tags - `rainbowTags.denylistTags`
+
+A list of tags excluded from coloring.
+
+Example:
+
+```javascript
+{
+  "rainbowTags.denylistTags": ["html", "head", "body"]
+}
+```
+
 ## Credits
 
 Authors:
