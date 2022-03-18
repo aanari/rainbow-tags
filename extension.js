@@ -9,42 +9,21 @@ const vscode = require('vscode')
  * This is part of the script to prevent hightlighting for stuff like TS types, eg: "const stuff: <CustomType>"
  * @type {string[]}
  */
-const supportedLanguages = [
-  'html',
-  'php',
-  'twig',
-  'blade',
-  'smarty',
-  'xml'
-]
+const supportedLanguages = vscode.workspace
+  .getConfiguration('rainbowTags')
+  .get('supportedLanguages')
+
+function isLanguageUsed(id) {
+  return vscode.window.activeTextEditor.document.languageId===id && supportedLanguages.includes(id)
+}
 
 /**
  * List of denylisted unformatter tags
  * @type {string][]}
  */
-const denylistTags = [
-  '!DOCTYPE',
-  'html',
-  'head',
-  'meta',
-  'body',
-  'title',
-  'link',
-  'script',
-  'base',
-  'style',
-  'area',
-  'br',
-  'col',
-  'embed',
-  'hr',
-  'img',
-  'input',
-  'param',
-  'source',
-  'track',
-  'wbr'
-]
+const denylistTags = vscode.workspace
+  .getConfiguration('rainbowTags')
+  .get('denylistTags')
 
 /**
  * List of denylisted formatter closing tags - eg: </title>
@@ -247,30 +226,45 @@ function rainbowTags (activeEditor) {
   /*********************************************/
 
   /**
-   * Removes all HTML comments from the string
+   * Removes tags from the string
    * @param {string} inputString
-   * @return {string} String without HTML comments
+   * @return {string} String without tags
    */
-  const commentRemover = (inputString) => {
+  const tagRemover = (inputString) => {
   /**
    * Temporary text file to store the matches found for the closing tags via RegEx
    * @type {string}
    */
-    let matchComment
+    let matchTag
 
     /**
-   * RegEx to find all the comments
+   * RegEx for characters between tags
+   * @type {string}
+   */
+    const charactersBetweenTags = "([\\s\\S])*?"
+
+    /**
+   * RegEx to find all the tags
    * @type {RegExp}
    */
-    const regExComments = /<!--([\s\S])*?-->/gm
+    const regEx = new RegExp([
+      `<!--${charactersBetweenTags}-->`,
+      `<script( ${charactersBetweenTags})?>${charactersBetweenTags}</script>`,
+    
+      ...(isLanguageUsed("vue") ? [
+        `{{${charactersBetweenTags}}}`,
+        `="${charactersBetweenTags}"`
+      ] : [])
+      
+    ].join("|"), "gm")
 
     // eslint-disable-next-line no-cond-assign
-    while (matchComment = regExComments.exec(inputString)) {
-      let matchLen = matchComment[0].length
+    while (matchTag = regEx.exec(inputString)) {
+      let matchLen = matchTag[0].length
       let repl = ' '.repeat(matchLen)
 
-      // Replaces comment with spaces
-      inputString = inputString.substring(0, matchComment.index) + repl + inputString.substring(matchComment.index + matchLen)
+      // Replaces tag with spaces
+      inputString = inputString.substring(0, matchTag.index) + repl + inputString.substring(matchTag.index + matchLen)
     }
     return inputString
   }
@@ -454,7 +448,7 @@ function rainbowTags (activeEditor) {
   /****************************/
 
   // Remove comments from the script
-  text = commentRemover(text)
+  text = tagRemover(text)
 
   // Assign decorator types
   divsDecorationTypeMap = mapDecoratorTypes(tagDecoratorList)
