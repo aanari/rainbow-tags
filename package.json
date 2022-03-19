@@ -12,7 +12,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*",
+    "onStartupFinished",
     "onCommand:extension.rainbowTags"
   ],
   "main": "./extension.js",
