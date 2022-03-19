@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.4.1]
+- `supportedLanguages` and `denylistTags` are now configurable (pauljackals)
+- optimized regex (pauljackals)
+- added `vue` to default `supportedLanguages` (pauljackals)
+
 ## [0.4.0]
 - Ignore ejs tags to prevent highlighting corruption until I figure out a way to reliably handle self closing tags (mathieugalle)
 
