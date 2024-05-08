@@ -1,4 +1,30 @@
 /**
+ * @license
+ * MIT License
+ *
+ * Copyright (c) 2020 Garth Mortensen
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+/**
  * VSCode import
  * @type any
  */
@@ -7,7 +33,7 @@ const vscode = require('vscode')
 /**
  * List of supported language IDs that the extension renders in
  * This is part of the script to prevent hightlighting for stuff like TS types, eg: "const stuff: <CustomType>"
- * @type {string[]}
+ * @type {Array<string>}
  */
 const supportedLanguages = vscode.workspace
   .getConfiguration('rainbowTags')
@@ -19,7 +45,7 @@ function isLanguageUsed(id) {
 
 /**
  * List of denylisted unformatter tags
- * @type {string][]}
+ * @type {Array<string>}
  */
 const denylistTags = vscode.workspace
   .getConfiguration('rainbowTags')
@@ -27,25 +53,25 @@ const denylistTags = vscode.workspace
 
 /**
  * List of denylisted formatter closing tags - eg: </title>
- * @type {string}
+ * @type {Array<string>}
  */
 const denylistTagsFormattedEndings = denylistTags.map(tag => '</' + tag + '>')
 
 /**
  * List of denylisted formatter beginning tags without - eg: <title>
- * @type {string}
+ * @type {Array<string>}
  */
 const denylistTagsFormattedBeginnings = denylistTags.map(tag => '<' + tag + '>')
 
 /**
  * List of denylisted formatter beginning tags with whitespaces - eg: <title class="red">
- * @type {string}
+ * @type {Array<string>}
  */
 const denylistTagsFormattedBeginningsWithWhitespaces = denylistTags.map(tag => '<' + tag + ' ')
 
 /**
  * List of denylisted formatter beginning tags with linebreaks - eg: <title \n>
- * @type {string}
+ * @type {Array<string>}
  */
 const denylistTagsFormattedBeginningsWithLinebreaks = denylistTags.map(tag => '<' + tag)
 
@@ -61,7 +87,7 @@ const allowEverywhere = vscode.workspace
 /**
  * User set color array thought the options
  * Can instead inherit the default values if user sets nothing
- * @type {string[]}
+ * @type {Array<string>}
  */
 const tagColorList = vscode.workspace
   .getConfiguration('rainbowTags')
@@ -70,7 +96,7 @@ const tagColorList = vscode.workspace
 /**
  * User set style choice for highlighting
  * Can instead inherit the default value if user sets nothing
- * @type {string[]}
+ * @type {Array<string>}
  */
 const colorStyle = vscode.workspace
   .getConfiguration('rainbowTags')
@@ -88,7 +114,7 @@ const isolatedRightBracketsDecorationTypes = vscode.window.createTextEditorDecor
 
 /**
  * List of color text decorators that
- * @type {{key: string}[]]} - A list of VScode's "TextEditorDecorationType" values ending with a number based on auto-generation
+ * @type {Array<{key: string}>} - A list of VScode's "TextEditorDecorationType" values ending with a number based on auto-generation
  */
 const tagDecoratorList = []
 
@@ -119,9 +145,10 @@ function activate (context) {
 
   // Assigns all colors to the decorator list
   for (let colorIndex in tagColorList) {
+    colorIndex = parseInt(colorIndex, 10);
     let stylePair
 
-    switch (colorStyle) {
+    switch (colorStyle.toString()) {
     case 'background-color':
       stylePair = {
         backgroundColor: tagColorList[colorIndex]
@@ -217,7 +244,7 @@ function rainbowTags (activeEditor) {
 
   /**
    * List of empty arrays, ready to be populated later
-   * @type {[[]]}
+   * @type {Array<Array>}
    */
   let divsDecorationTypeMap = []
 
@@ -233,7 +260,7 @@ function rainbowTags (activeEditor) {
   const tagRemover = (inputString) => {
   /**
    * Temporary text file to store the matches found for the closing tags via RegEx
-   * @type {string}
+   * @type {RegExpResult|null}
    */
     let matchTag
 
@@ -271,8 +298,8 @@ function rainbowTags (activeEditor) {
 
   /**
    * Maps currently active decorator list generated from the config file for the color array
-   * @param {[{key: string}]} decoratorList
-   * @return {[[]]} Returns an array of empty arrays, ready to be populated later
+   * @param {Array<{key: string}>} decoratorList
+   * @return {Array<Array>} Returns an array of empty arrays, ready to be populated later
    */
   const mapDecoratorTypes = (decoratorList) => {
     const returnArray = []
@@ -298,19 +325,19 @@ function rainbowTags (activeEditor) {
 
     /**
     * Temporary text file to store the matches found for the opening tags via RegEx
-    * @type {string}
+    * @type {RegExpResult|null}
     */
     let matchTags
 
     /**
      * Temporary dump for all opened divs
-     * @type {[number]}
+     * @type {Array<number>}
      */
     const openDivStack = []
 
     /**
      * Temporary dump for all of the closing brackets
-     * @type {[number]}
+     * @type {Array<any>}
      */
     const rightBracketsDecorationTypes = []
 
@@ -366,9 +393,9 @@ function rainbowTags (activeEditor) {
         const matchAgainstDenylistFirstWhitespace = matchTags[0].substr(0, matchTags[0].indexOf(' ') + 1)
 
         /**
-         * @type {string[]}
+         * @type {Array<string>}
          */
-        const matchAgainstDenylistFirstLinebreak = matchTags[0].match(/[^\r\n]+/g)
+        const matchAgainstDenylistFirstLinebreak = matchTags[0].match(/[^\r\n]+/g) || []
 
         // Dont hightlight denylisted tag beginnings - no whitespaces
         if (denylistTagsFormattedBeginnings.includes(matchAgainstDenylist)) {
@@ -431,8 +458,8 @@ function rainbowTags (activeEditor) {
     // Set the decorators for all proper tags
     for (let tagDecorator in tagDecoratorList) {
       activeEditor.setDecorations(
-        tagDecoratorList[tagDecorator],
-        divsDecorationTypeMap[tagDecorator]
+        tagDecoratorList[parseInt(tagDecorator, 10)],
+        divsDecorationTypeMap[parseInt(tagDecorator, 10)]
       )
     }
 
