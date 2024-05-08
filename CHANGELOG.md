@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.4.2]
+- Fix JSC errors
+
 ## [0.4.1]
 - `supportedLanguages` and `denylistTags` are now configurable (pauljackals)
 - optimized regex (pauljackals)
